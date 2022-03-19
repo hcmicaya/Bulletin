@@ -1,5 +1,3 @@
 exports.register = (req, res) => {
-    res.json({
-        data: "you hit register endpointasd",
-    });
+    console.log("REGISTER CONTROLLER", req.body);
 };
