@@ -2,6 +2,7 @@ import { useState } from "react";
 import Layout from "../components/Layout";
 import axios from "axios";
 import { showSuccessMessage, showErrorMessage } from "../helpers/alerts";
+import { API } from "../config";
 
 const Register = () => {
     const [state, setState] = useState({
@@ -25,35 +26,33 @@ const Register = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setState({ ...state, buttonText: "Registering" });
-        // console.table({ name, email, password });
-        axios
-            .post(`http://localhost:8000/api/register`, {
+
+        try {
+            const response = await axios.post(`${API}/register`, {
                 name,
                 email,
                 password,
-            })
-            .then((response) => {
-                console.log(response);
-                setState({
-                    ...state,
-                    name: "hans",
-                    email: "hansmicaya@yahoo.com",
-                    password: "123123",
-                    buttonText: "Submitted",
-                    success: response.data.message,
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-                setState({
-                    ...state,
-                    buttonText: "Register",
-                    error: error.response.data.error,
-                });
             });
+            console.log(response);
+            setState({
+                ...state,
+                name: "hans",
+                email: "hansmicaya@yahoo.com",
+                password: "123123",
+                buttonText: "Submitted",
+                success: response.data.message,
+            });
+        } catch (error) {
+            console.log(error);
+            setState({
+                ...state,
+                buttonText: "Register",
+                error: error.response.data.error,
+            });
+        }
     };
 
     const registerForm = () => (
@@ -65,6 +64,7 @@ const Register = () => {
                     type="text"
                     className="form-control"
                     placeholder="Type your name"
+                    required
                 />
             </div>
             <div className="form-group">
@@ -74,6 +74,7 @@ const Register = () => {
                     type="email"
                     className="form-control"
                     placeholder="Type your email"
+                    required
                 />
             </div>
             <div className="form-group">
@@ -83,6 +84,7 @@ const Register = () => {
                     type="password"
                     className="form-control"
                     placeholder="Type your password"
+                    required
                 />
             </div>
             <div className="form-group">
