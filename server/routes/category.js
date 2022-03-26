@@ -26,22 +26,22 @@ const {
 // routes
 router.post(
     "/category",
-
+    categoryCreateValidator,
     runValidation,
     requireSignin,
     adminMiddleware,
     create
 );
-router.get("category", list);
-router.get("category/:slug", read);
+router.get("/categories", list);
+router.get("/category/:slug", read);
 router.put(
-    "category/:slug",
+    "/category/:slug",
     categoryUpdateValidator,
     runValidation,
     requireSignin,
     adminMiddleware,
     create
 );
-router.get("category/:slug", requireSignin, adminMiddleware, remove);
+router.get("/category/:slug", requireSignin, adminMiddleware, remove);
 
 module.exports = router;
