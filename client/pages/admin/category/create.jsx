@@ -85,7 +85,7 @@ const Create = ({ user, token }) => {
             setState({
                 ...state,
                 name: "",
-                content: "",
+                content: " ",
                 formData: process.browser && new FormData(),
                 buttonText: "Created",
                 imageUploadText: "Upload image",
@@ -96,6 +96,7 @@ const Create = ({ user, token }) => {
             setState({
                 ...state,
                 buttonText: "Create",
+                success: "",
                 imageUploadText: "Upload image",
                 error: error.response.data.error,
             });
