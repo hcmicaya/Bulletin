@@ -33,13 +33,13 @@ router.get("/links", list);
 router.put("/click-count", clickCount);
 router.get("/links", read);
 router.put(
-    "/link/:slug",
+    "/link/:id",
     linkUpdateValidator,
     runValidation,
     requireSignin,
     authMiddleware,
-    create
+    update
 );
-router.get("/link/:slug", requireSignin, authMiddleware, remove);
+router.delete("/link/:id", requireSignin, authMiddleware, remove);
 
 module.exports = router;
