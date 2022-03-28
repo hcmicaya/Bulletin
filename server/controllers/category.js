@@ -164,9 +164,90 @@ exports.read = (req, res) => {
 };
 
 exports.update = (req, res) => {
-    //
+    const { slug } = req.params;
+    const { name, image, content } = req.body;
+    // image data
+    const base64Data = new Buffer.from(
+        image.replace(/^data:image\/\w+;base64,/, ""),
+        "base64"
+    );
+    const type = image.split(";")[0].split("/")[1];
+
+    Category.findOneAndUpdate({ slug }, { name, content }, { new: true }).exec(
+        (err, updated) => {
+            if (err) {
+                return res.status(400).json({
+                    error: "Could not find category to update",
+                });
+            }
+            console.log("UPDATED", updated);
+            if (image) {
+                // remove the existing image from s3 before uploading new image
+                const deleteParams = {
+                    Bucket: "bulletin613",
+                    Key: `${updated.image.key}`,
+                };
+
+                s3.deleteObject(deleteParams, function (err, data) {
+                    if (err) console.log("S3 DELETE ERROR DURING UPDATE", err);
+                    else console.log("S3 DELETED DURING UPDATE", data); // deleted
+                });
+
+                //handle upload
+                const params = {
+                    Bucket: "bulletin613",
+                    Key: `category/${uuidv4()}.${type}`,
+                    Body: base64Data,
+                    ACL: "public-read",
+                    ContentEncoding: "base64",
+                    ContentType: `image/${type}`,
+                };
+
+                s3.upload(params, (err, data) => {
+                    if (err)
+                        res.status(400).json({ error: "Upload to s3 failed." });
+                    console.log("AWS UPLOAD RES DATA", data);
+                    updated.image.url = data.Location;
+                    updated.image.key = data.Key;
+
+                    // save to db
+                    updated.save((err, success) => {
+                        if (err)
+                            res.status(400).json({
+                                error: "Duplicate category",
+                            });
+                        res.json(success);
+                    });
+                });
+            } else {
+                res.json(updated);
+            }
+        }
+    );
 };
 
 exports.remove = (req, res) => {
-    //
+    const { slug } = req.params;
+
+    Category.findOneAndRemove({ slug }).exec((err, data) => {
+        if (err) {
+            res.status(400).json({
+                error: "Duplicate category",
+            });
+        }
+        // remove the existing image from s3 before uploading new image
+        const deleteParams = {
+            Bucket: "bulletin613",
+            Key: `${data.image.key}`,
+        };
+
+        s3.deleteObject(deleteParams, function (err, data) {
+            if (err) console.log("S3 DELETE ERROR DURING UPDATE", err);
+            else console.log("S3 DELETED DURING UPDATE", data); // deleted
+        });
+
+        res.json({
+            message: "Category deleted successfully",
+        });
+    });
 };

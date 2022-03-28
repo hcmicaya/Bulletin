@@ -40,8 +40,8 @@ router.put(
     runValidation,
     requireSignin,
     adminMiddleware,
-    create
+    update
 );
-router.get("/category/:slug", requireSignin, adminMiddleware, remove);
+router.delete("/category/:slug", requireSignin, adminMiddleware, remove);
 
 module.exports = router;
