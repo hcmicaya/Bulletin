@@ -6,7 +6,6 @@ import moment from "moment";
 import { API } from "../../config";
 import { getCookie } from "../../helpers/auth";
 import withUser from "../withUser";
-import { showSuccessMessage } from "../../helpers/alerts";
 
 const User = ({ user, token, userLinks }) => {
     const confirmDelete = (e, id) => {
@@ -63,7 +62,7 @@ const User = ({ user, token, userLinks }) => {
                         {l.clicks} clicks
                     </span>
 
-                    <Link href={`/user/link/${l.slug}`}>
+                    <Link href={`/user/link/${l._id}`}>
                         <span className="badge text-warning pull-right">
                             Update
                         </span>

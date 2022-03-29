@@ -20,6 +20,7 @@ exports.create = (req, res) => {
         res.json(data);
     });
 };
+
 exports.list = (req, res) => {
     Link.find({}).exec((err, data) => {
         if (err) {
@@ -31,9 +32,19 @@ exports.list = (req, res) => {
         res.json(data);
     });
 };
+
 exports.read = (req, res) => {
-    //
+    const { id } = req.params;
+    Link.findOne({ _id: id }).exec((err, data) => {
+        if (err) {
+            return res.status(400).json({
+                error: "Error finding the link",
+            });
+        }
+        res.json(data);
+    });
 };
+
 exports.update = (req, res) => {
     const { id } = req.params;
     const { title, url, categories, type, medium } = req.body;
@@ -50,6 +61,7 @@ exports.update = (req, res) => {
         }
     );
 };
+
 exports.remove = (req, res) => {
     const { id } = req.params;
     Link.findOneAndRemove({ _id: id }).exec((err, data) => {
