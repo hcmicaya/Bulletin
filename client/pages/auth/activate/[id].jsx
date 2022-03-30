@@ -35,7 +35,6 @@ const ActivateAccount = ({ router }) => {
             console.log("account activate response", response);
             setState({
                 ...state,
-                name: "",
                 token: "",
                 buttonText: "Activated",
                 success: response.data.message,
@@ -43,6 +42,7 @@ const ActivateAccount = ({ router }) => {
         } catch (error) {
             setState({
                 ...state,
+                success: "",
                 buttonText: "Activate Account",
                 error: error.response.data.error,
             });

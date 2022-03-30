@@ -20,7 +20,7 @@ const ses = new AWS.SES({ apiVersion: "2010-12-01" });
 
 exports.register = (req, res) => {
     // console.log("REGISTER CONTROLLER", req.body);
-    const { name, email, password } = req.body;
+    const { name, email, password, categories } = req.body;
 
     // check if user exists in our db
     User.findOne({ email }).exec((err, user) => {
@@ -33,7 +33,7 @@ exports.register = (req, res) => {
 
         // generate token with user name email and password
         const token = jwt.sign(
-            { name, email, password },
+            { name, email, password, categories },
             process.env.JWT_ACCOUNT_ACTIVATION,
             {
                 expiresIn: "10m",
@@ -74,7 +74,7 @@ exports.registerActivate = (req, res) => {
                 });
             }
 
-            const { name, email, password } = jwt.decode(token);
+            const { name, email, password, categories } = jwt.decode(token);
             const username = shortId.generate();
 
             User.findOne({ email }).exec((err, user) => {
@@ -85,7 +85,13 @@ exports.registerActivate = (req, res) => {
                 }
 
                 // register new user
-                const newUser = new User({ username, name, email, password });
+                const newUser = new User({
+                    username,
+                    name,
+                    email,
+                    password,
+                    categories,
+                });
                 newUser.save((err, result) => {
                     if (err) {
                         error: "Error saving use in database. Try again later.";
