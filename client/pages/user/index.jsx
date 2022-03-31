@@ -93,7 +93,7 @@ const User = ({ user, token, userLinks }) => {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link href="/user/profule/update">
+                            <Link href="/user/profile/update">
                                 <a className="nav link"> Update profile</a>
                             </Link>
                         </li>
