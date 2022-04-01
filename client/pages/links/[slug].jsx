@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import Link from "next/link";
 import axios from "axios";
@@ -19,10 +19,59 @@ const Links = ({
     const [limit, setLimit] = useState(linksLimit);
     const [skip, setSkip] = useState(0);
     const [size, setSize] = useState(totalLinks);
+    const [popular, setPopular] = useState([]);
+
+    useEffect(() => {
+        loadPopular();
+    }, []);
+
+    const loadPopular = async () => {
+        const response = await axios.get(
+            `${API}/link/popular/${category.slug}`
+        );
+        setPopular(response.data);
+    };
+
+    const listOfPopularLinks = () =>
+        popular.map((l, i) => (
+            <div key={i} className="row alert alert-seconday p-2">
+                <div className="col-md-8" onClick={() => handleClick(l._id)}>
+                    <a href={l.url} target="_blank">
+                        <h5 className="pt-2">{l.title}</h5>
+                        <h6
+                            className="pt-2 text-danger"
+                            style={{ fontSize: "12px" }}
+                        >
+                            {l.url}
+                        </h6>
+                    </a>
+                </div>
+
+                <div className="col-md-4 pt-2">
+                    <span className="pull-right" style={{ fontSize: "12px" }}>
+                        {moment(l.createdAt).fromNow()} by {l.postedBy.name}
+                    </span>
+                </div>
+                <div className="col-md-12">
+                    <span className="badge text-dark">
+                        {l.type} {l.medium}
+                    </span>
+                    {l.categories.map((c, i) => (
+                        <span key={i} className="badge text-success">
+                            {c.name}{" "}
+                        </span>
+                    ))}
+                    <span className="badge test-seconday pull-right">
+                        {l.clicks} clicks
+                    </span>
+                </div>
+            </div>
+        ));
 
     const handleClick = async (linkId) => {
         const response = await axios.put(`${API}/click-count`, { linkId });
         loadUpdatedLinks();
+        loadPopular();
     };
 
     const loadUpdatedLinks = async () => {
@@ -117,7 +166,7 @@ const Links = ({
                 <div className="col-md-8">{listOfLinks()}</div>
                 <div className="col-md-4">
                     <h2 className="lead">Most popular in {category.name}</h2>
-                    <p>Show popular links</p>
+                    <div className="p-3">{listOfPopularLinks()}</div>
                 </div>
             </div>
             {/* <div className="text-center pt-4 pb-5">{loadMoreButton()}</div> */}
