@@ -31,35 +31,35 @@ exports.create = (req, res) => {
         }
         res.json(data);
         // find all users in the category
-        User.find({ categories: { $in: categories } }).exec((err, users) => {
-            if (err) {
-                throw new Error(err);
-                console.log(
-                    "Error finding users to send email on link publish"
-                );
-            }
-            Category.find({ _id: { $in: categories } }).exec((err, result) => {
-                data.categories = result;
+        // User.find({ categories: { $in: categories } }).exec((err, users) => {
+        //     if (err) {
+        //         throw new Error(err);
+        //         console.log(
+        //             "Error finding users to send email on link publish"
+        //         );
+        //     }
+        //     Category.find({ _id: { $in: categories } }).exec((err, result) => {
+        //         data.categories = result;
 
-                for (let i = 0; i < users.length; i++) {
-                    const params = linkPublishedParams(users[i].email, data);
-                    const sendEmail = ses.sendEmail(params).promise();
+        //         for (let i = 0; i < users.length; i++) {
+        //             const params = linkPublishedParams(users[i].email, data);
+        //             const sendEmail = ses.sendEmail(params).promise();
 
-                    sendEmail
-                        .then((success) => {
-                            console.log("email submitted to SES ", success);
-                            return;
-                        })
-                        .catch((failure) => {
-                            console.log(
-                                "error on email submitted to SES ",
-                                failure
-                            );
-                            return;
-                        });
-                }
-            });
-        });
+        //             sendEmail
+        //                 .then((success) => {
+        //                     console.log("email submitted to SES ", success);
+        //                     return;
+        //                 })
+        //                 .catch((failure) => {
+        //                     console.log(
+        //                         "error on email submitted to SES ",
+        //                         failure
+        //                     );
+        //                     return;
+        //                 });
+        //         }
+        //     });
+        // });
     });
 };
 
