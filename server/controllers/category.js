@@ -13,52 +13,6 @@ const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
 });
 
-// exports.create = (req, res) => {
-//     let form = new formidable.IncomingForm();
-//     form.parse(req, (err, fields, files) => {
-//         if (err) {
-//             return res.status(400).json({
-//                 error: "Image could not upload",
-//             });
-//         }
-//         // console.table({err, fields, files})
-//         const { name, content } = fields;
-//         const { image } = files;
-
-//         const slug = slugify(name);
-//         let category = new Category({ name, content, slug });
-//         if (image.size > 2000000) {
-//             return res.status(400).json({
-//                 error: "Image should be less than 2mb",
-//             });
-//         }
-//         // upload image to s3
-//         const params = {
-//             Bucket: "bulletin613",
-//             Key: `category/${uuidv4()}`,
-//             Body: fs.readFileSync(image.filepath),
-//             ACL: "public-read",
-//             ContentType: `image/jpg`,
-//         };
-
-//         s3.upload(params, (err, data) => {
-//             if (err) res.status(400).json({ error: "Upload to s3 failed." });
-//             console.log("AWS UPLOAD RES DATA", data);
-//             category.image.url = data.Location;
-//             category.image.key = data.Key;
-
-//             // save to db
-//             category.save((err, success) => {
-//                 if (err)
-//                     res.status(400).json({
-//                         error: "Duplicate category",
-//                     });
-//                 return res.json(success);
-//             });
-//         });
-//     });
-// };
-
 exports.create = (req, res) => {
     const { name, image, content } = req.body;
     // image data
@@ -72,7 +26,7 @@ exports.create = (req, res) => {
     let category = new Category({ name, content, slug });
 
     const params = {
-        Bucket: "bulletin613",
+        Bucket: `${process.env.AWS_BUCKET}`,
         Key: `category/${uuidv4()}.${type}`,
         Body: base64Data,
         ACL: "public-read",
@@ -98,28 +52,6 @@ exports.create = (req, res) => {
         });
     });
 };
-
-// exports.create = (req, res) => {
-//     const { name, content } = req.body;
-//     const slug = slugify(name);
-//     const image = {
-//         url: `https://via.placeholder.com/200x150.png?text=${process.env.CLIENT_URL}`,
-//         key: "123",
-//     };
-
-//     const category = new Category({ name, slug, image, content });
-//     category.posteBy = req.user._id;
-
-//     category.save((err, data) => {
-//         if (err) {
-//             console.log("CATEGORY CREATE ERR", err);
-//             return res.status(400).json({
-//                 error: "Category create failed",
-//             });
-//         }
-//         res.json(data);
-//     });
-// };
 
 exports.list = (req, res) => {
     Category.find({}).exec((err, data) => {
@@ -184,7 +116,7 @@ exports.update = (req, res) => {
             if (image) {
                 // remove the existing image from s3 before uploading new image
                 const deleteParams = {
-                    Bucket: "bulletin613",
+                    Bucket: `${process.env.AWS_BUCKET}`,
                     Key: `${updated.image.key}`,
                 };
 
@@ -195,7 +127,7 @@ exports.update = (req, res) => {
 
                 //handle upload
                 const params = {
-                    Bucket: "bulletin613",
+                    Bucket: `${process.env.AWS_BUCKET}`,
                     Key: `category/${uuidv4()}.${type}`,
                     Body: base64Data,
                     ACL: "public-read",
@@ -237,7 +169,7 @@ exports.remove = (req, res) => {
         }
         // remove the existing image from s3 before uploading new image
         const deleteParams = {
-            Bucket: "bulletin613",
+            Bucket: `${process.env.AWS_BUCKET}`,
             Key: `${data.image.key}`,
         };
 
