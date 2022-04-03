@@ -2,9 +2,9 @@
 module.exports = {
     publicRuntimeConfig: {
         APP_NAME: "NODE-REACT-AWS",
-        API: "/api",
-        PRODUCTION: true,
-        DOMAIN: "https://ec2-54-167-60-52.compute-1.amazonaws.com/",
+        API: "http://localhost:8000/api",
+        PRODUCTION: false,
+        DOMAIN: "http://localhost:3000",
         FB_APP_ID: "DOVKQF49QKAFJI",
     },
 };

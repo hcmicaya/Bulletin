@@ -98,9 +98,9 @@ const Register = () => {
             console.log(response);
             setState({
                 ...state,
-                name: "hans",
-                email: "hansmicaya@yahoo.com",
-                password: "123123",
+                name: "",
+                email: "",
+                password: "",
                 buttonText: "Submitted",
                 success: response.data.message,
             });

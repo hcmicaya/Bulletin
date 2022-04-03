@@ -30,7 +30,7 @@ exports.create = (req, res) => {
             });
         }
         res.json(data);
-        // find all users in the category
+        //find all users in the category
         // User.find({ categories: { $in: categories } }).exec((err, users) => {
         //     if (err) {
         //         throw new Error(err);
